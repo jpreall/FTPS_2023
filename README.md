@@ -7,8 +7,9 @@
 
 This tutorial will be a guide through the first few steps of primary data analysis:
 1. [FASTQ generation with `cellranger mkfastq`](#section1)
-2. [Mapping and count matrix generation with `cellranger count`](#section2)
-3. [Combining two samples into a shared, normalized matrix with `cellranger aggr`](#section3)
+2. [Making a custom genome reference with `cellranger mkref`](#section2)
+3. [Mapping and count matrix generation with `cellranger count`](#section3)
+4. [Combining two samples into a shared, normalized matrix with `cellranger aggr`](#section4)
 
 -------
 ## Single Cell Lab: Demonstration Experiment
@@ -38,17 +39,23 @@ Let's dive in:
 
 You submitted your 10X libraries to your sequencing core and the run completed successfully.  If your core is nice enough to provide an Illumina quality score plot as part of your data delivery, it might look something like this:
 
-![QC images](https://github.com/jpreall/SeqTech2019/blob/master/images/QC_scores.png "Example QC data from NextSeq")
+![QC images](https://github.com/jpreall/FTPS_2022/blob/main/NextSeq2000_QC.png "Example QC data from NextSeq")
 
-Don't let those ugly spikes at the end of R1 and going on through the beginning of R2 worry you.  This is very typical, and comes from some common but tolerable artifacts of the library prep and sequencing.  If you look closely (or use a tool like [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)), you'll even be able to determine the sequence of an abundant "contaminating" signature at the start of Read2:
+Don't let those ugly spikes in the "% Base" (right panel) at the end of R1 and going on through the beginning of R4 worry you.  This is very typical.  R2 and R3 are the two index reads, which contain the sample barcodes, which in the case of our experiment is just a pool of 2 sequences.  Thus, it's totally expected that they have non-uniform base percentages. The region at the beginning of "R4" (which is actually Read 2 of the genomic insert) that has a stretch of non-uniform base utilization is also quite normal to see in 10X Genomics libraries, and it comes from some common but tolerable artifacts of the library prep and sequencing.  If you look closely (or use a tool like [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)), you'll even be able to determine the sequence of an abundant "contaminating" signature at the start of Read2:
 
 ```bash
-AAGCAGTGGTATCAACGCAGAGTACATGGG
+AAGCAGTGGTATCAACGCAGAGTACATGGG ## Template Switch Oligo Sequence
 ```
 As it turns out, this is the sequence of the 10X Template Switch Oligo (TSO).  Lots of reads contain with the TSO, due to artifacts of the library chemistry.  [Don't Panic.](https://en.wikipedia.org/wiki/Don%27t_Panic_(The_Hitchhiker%27s_Guide_to_the_Galaxy))
 
+## Installing Cellranger
+
+**Cellranger** is 10X Genomic's free-to-use software that carries out mapping, and primary data analysis for all 10X Genomics sequencing-based pipelines. *This is not meant to be run on your personal laptop.* It is an intensive, memory-hungry Linux application that is built to run on high-performance workstations or clusters. For the purposes of this course, the Cellranger steps will be carried out ahead of time before our interactive session, partly because it takes several hours to complete (and that is if there is no queue on our cluster).  But if you would like to know more about setting up Cellranger at your home institution, 10X has some helpful instructions:  [Cellranger Installation Help](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/tutorial_in)
+
 ## <a name="section1">Creating 10X-compatible FASTQ files with `cellranger mkfastq`</a>
-You probably won't have to do this part yourself, but you might have to instruct your NGS core on how to generate properly formatted FASTQ files that will plug nicely into the subsequent `count` pipeline.  
+[Cellranger mkfastq instructions](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/mkfastq)
+
+Cellranger expects its input FASTQ files to be in a very specific format, which is ever-so-slightly different than the default format produced by Illumina's FASTQ generation pipeline.  For this reason, they bundled their own version of Illumina's `bcl2fastq` into a program called `mkfastq` that spits out files in a Cellranger-compatible format. You may never have to do this part yourself, since it is likely that NGS core will be the one generating your 10X- FASTQ files that will plug nicely into the subsequent `count` pipeline.  
 
 ```bash
 cellranger mkfastq \
@@ -64,7 +71,7 @@ A sample sheet tells the FASTQ generation pipeline how to break the reads out in
 ```bash
 [Header],,,,,,,
 IEMFileVersion,4,,,,,,
-Date,1/24/18,,,,,,
+Date,7/15/22,,,,,,
 Workflow,GenerateFASTQ,,,,,,
 Application,NextSeq FASTQ Only,,,,,,
 Assay,TruSeq HT,,,,,,
@@ -72,18 +79,33 @@ Description,,,,,,,
 Chemistry,Amplicon,,,,,,
 ,,,,,,,
 [Reads],,,,,,,
-26,,,,,,,
-56,,,,,,,
+28,,,,,,,
+90,,,,,,,
 [Settings],,,,,,,
 ,,,,,,,
 [Data],,,:,,,,
 Sample_ID,Sample_Name,Sample_Plate,Sample_Well,I7_Index_ID,index,Sample_Project,Description
-300180,SeqCourse2018-10XGEX-LPLard,,,SI-GA-A1,SI-GA-A1,SeqTech2018,
-300183,SeqCourse2018-10XGEX-LPcontrol,,,SI-GA-A2,SI-GA-A2,SeqTech2018,
+300180,FTPS22_Control,,,SI-TT-A9,SI-TT-A9,FTPS22,
+300183,FTPS22_Control,,,SI-TT-A10,SI-TT-A10,FTPS22,
 ```
 
+### Dual-indexed libraries
 
-10X Genomics uses a clever trick to make barcoding simple.  Each sample barcode is actually a carefully chosen pool of four unique 8bp indices.  This is why you won't see anything that looks like `AAGTCTGA` in these sample sheets, but rather something that looks like `SI-GA-C7`
+If you use `cellranger mkfastq` to generate your FASTQs, it will translate `SI-TT-A9` into the pair of i5/i7 barcodes based on this [table provided by 10X Genomics.](https://cdn.10xgenomics.com/raw/upload/v1655151897/support/in-line%20documents/Dual_Index_Kit_TT_Set_A.csv) For example:
+
+```bash
+index_name,index(i7),index2_workflow_a(i5),index2_workflow_b(i5)
+SI-TT-A9,AAGTGGAGAG,TTCCTGTTAC,GTAACAGGAA
+SI-TT-A10,CGTGACATGC,ATGGTCTAAA,TTTAGACCAT
+```
+Here, 'workflow a' and 'workflow b' refer to the specific chemistry of the Illumina sequencer being used.  The NextSeq500 and NextSeq2000 read their i5 indices in opposite directions, so this barcode could be read out directly or as a the reverse complement, depending on the sequencer.  Cellranger will detect this automatically, so you needn't worry any further about it. Just remember to correcly specify your index in the SampleSheet using `SI-TT-xx` according to whichever well of the barcoding plate you used, and all will be magically taken care of.
+
+
+### Single-indexed libraries (soon to be discontinued)
+Originally, 10X used only a single index read, added at the final PCR step, to distinguish samples. This works fine for older sequencing instruments like the NextSeq500, but on the newer patterned flow-cell instruments like the NextSeq2000 and NovaSeq began to suffer from the problem of [index hopping](https://www.10xgenomics.com/blog/sequence-with-confidence-understand-index-hopping-and-how-to-resolve-it). While newer libraries use dual indexing, you may still encounter single-indexed strategies from time to time, so I will include here a description of how they work:
+
+
+**Single-indexing using Pooled Barcodes:** 10X Genomics uses a clever trick to make barcoding simple.  Each sample barcode is actually a carefully chosen pool of four unique 8bp indices.  This is why you won't see anything that looks like `AAGTCTGA` in these sample sheets, but rather something that looks like `SI-GA-C7`
 
 If you use `cellranger mkfastq` to generate your FASTQs, it will translate `SI-GA-A2` into a set of four 8bp barcodes based on this [table provided by 10X Genomics.](https://s3-us-west-2.amazonaws.com/10x.files/supp/cell-exp/chromium-shared-sample-indexes-plate.csv).   For example:
 
@@ -98,7 +120,7 @@ SI-GA-A3,CAGTACTG,AGTAGTCT,GCAGTAGA,TTCCCGAC
 
 -------
 
-These are the files produced by Cellranger mkfastq from a NextSeq500 sequencing run:
+These are the files produced by Cellranger mkfastq from a NextSeq2000 sequencing run:
 
 ```bash
 $ ls /path/to/fastqs/
@@ -115,7 +137,7 @@ SeqCourse2018-10XGEX-LPLard_S1_L002_R2_001.fastq.gz  SeqCourse2018-10XGEX-LPLard
 -------
 ### What are all those files?
 
-#### ...I1... = 8bp Sample index read:
+#### ...I1... = 10bp Sample index1 (i7) read:
 ```bash
 @NB551387:259:H25HLBGXC:1:11101:7081:1841 1:N:0:GTTGCAGC
 GTTGCAGC
@@ -123,11 +145,20 @@ GTTGCAGC
 AAAAAEEE
 
 ```
-These files contain the Sample Index read information.  Note that the Cellranger mkfastq pipeline also writes the error-corrected sample index into the name line of the corresponding R1 and R2 reads.  See below.  
+
+#### ...I2... = 10bp Sample index2 (i5) read:
+```bash
+@NB551387:259:H25HLBGXC:1:11101:7081:1841 1:N:0:GTTGCAGC
+GTTGCAGC
++
+AAAAAEEE
+
+```
+These files contain the Sample Index read(s) information.  Note that the Cellranger mkfastq pipeline also writes the error-corrected sample index into the name line of the corresponding R1 and R2 reads.  See below.  
 
 -------
 
-#### ...R1... = Illumina Read 1.  This contains the cell barcode and UMI:
+#### ...R1... = Illumina Read 1 (aka the 'forward read').  This contains the cell barcode and UMI:
 ```bash
 @NB551387:259:H25HLBGXC:1:11101:7081:1841 1:N:0:GTTGCAGC
 CATCAAGGTCAGATAAGGTCGATCCGTT
@@ -135,9 +166,11 @@ CATCAAGGTCAGATAAGGTCGATCCGTT
 AAAAAEEEEEEEEEEEEEEEE/EEEEE<
 
 ```
-In the most recent version of the chemistry, this will be a 28bp read. 
+In the current chemistry, this will be a 28bp read:
   * Bases 1-16: Cell Barcode
   * Bases 17-28: UMI
+  
+**Note:** Older (version 2) libraries used a 26bp read (16bp Cell barcode, 10bp UMI)
 
 ```bash
 CATCAAGGTCAGATAAGGTCGATCCGTT
@@ -148,7 +181,7 @@ CATCAAGGTCAGATAAGGTCGATCCGTT
 The cell barcodes are only accepted if they are a close match to the curated list of possible barcodes generated by the synthesis chemistry. This list is buried within the Cellranger directory:
 
 ```bash
-$ head -n 4 /path/to/CellRanger/cellranger-3.1.0/cellranger-cs/3.1.0/lib/python/cellranger/barcodes/chromium_whitelist_3M_2018.txt 
+$ head -n 4 /fake/path/cellranger-7.0.0/lib/python/cellranger/barcodes/3M-february-2018.txt.gz
 AAACCCAAGAAACACT
 AAACCCAAGAAACCAT
 AAACCCAAGAAACCCA
@@ -171,23 +204,19 @@ CTGCAAACCATCTCCTGTGCAGGGTCCTGCTGGCACCATGGTCTCACAGCCACCCG
 +
 A//AAEEE///EA<////</E/</EEAA/AA//EEE<<A<//EAA/6A/<EEEA</
 ```
-Officially, 10X recommends quite long reads to map the gene body:
-
-|Read	|Read 1	|i7 Index	|i5 Index	|Read 2|
-|------------ |:------------:| -------:| -------:| --------:|
-|Purpose	|Cell barcode & UMI	|Sample Index	|N/A	|Insert|
-|Length	|28	|8	|0	|91|
-
-**Note from 10X:**
-* *Shorter transcript reads may lead to reduced transcriptome alignment rates. Cell barcode, UMI and Sample index reads must not be shorter than indicated. Any read can be longer than recommended. Additional bases in Sample index reads must be trimmed using cellranger mkfastq or Illumina's bcl2fastq prior to further analysis. Additional bases in Cell barcode or UMI reads will automatically be ignored by Cell Ranger 1.3 or later.* *
 
 -------
+## <a name="section2">Building a custom genome reference with `cellranger mkref`</a>
 
-## <a name="section2">Primary data analysis with `cellranger count`</a>
+Cellranger will map the reads to the reference genome that you specify and count digital gene expression according to the transcriptome model that was used during building of the reference.  For most users, we recommend downloading the pre-built references for the [human and mouse genomes provided by 10X](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest).  But you weirdos study plants, so there is no convenient pre-built reference genome for you.  You'll have to make your own.
 
-For each sample in your experiment, you'll need to run `cellranger count`.  [(detailed map of the pipeline)](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/map/cr-counter)
+### [Cellranger mkref instructions](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/references)
 
-`cellranger count` will map the reads to the reference genome that you specify and count digital gene expression according to the transcriptome model that was used during building of the reference.  In most cases, we use the pre-built references for the [human and mouse genomes provided by 10X:](https://support.10xgenomics.com/single-cell-gene-expression/software/downloads/latest)
+## <a name="section3">Primary data analysis with `cellranger count`</a>
+
+For each sample in your experiment, you'll need to run `cellranger count`.  [(detailed map of the pipeline)](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/count#cr-count)
+
+
 
 `cellranger count` is widely used to generate the primary count table, and has become a de facto standard despite there being a few alternatives.  It requires a linux machine with 8GB memory per CPU (to hold the human reference genome in memory), and is quite astoundingly slow and prone to crashing.  Mapping and counting a single sample typically takes 4-8 hours on a single multi-core node with 12-16 CPU cores and 128GB memory. 
 
@@ -283,7 +312,7 @@ Two other files that will be of extreme value to you are the actual data matrice
 The filtered and raw matrices are both also stored under a separate matrix market exchange (.mtx) file format along with separate .csv files listing the cell barcodes and gene names, which can be stiched together into a unified data matrix.  Look for these folders under `filtered_feature_bc_matrix` and `raw_feature_bc_matrix`, respectively.  You can open any of these files with [Seurat](https://satijalab.org/seurat/), or [Scanpy](https://scanpy.readthedocs.io/en/latest/), or potentially other 3rd party analysis packages.   
 
 
-## <a name="section3"> Combining samples with `cellranger aggr`</a>
+## <a name="section4"> Combining samples with `cellranger aggr`</a>
 
 Let's combine both the control and the lard diet samples into a unified data matrix.  
 Be careful not to accidentally bait a computation scientist into discussing the relative merits of the many different strategies for aggregating multiple data sets.  You will have to gnaw your foot off before they finally get to the punchline: 
