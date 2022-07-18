@@ -39,7 +39,7 @@ Let's dive in:
 
 You submitted your 10X libraries to your sequencing core and the run completed successfully.  If your core is nice enough to provide an Illumina quality score plot as part of your data delivery, it might look something like this:
 
-![QC images](https://github.com/jpreall/FTPS_2022/blob/main/NextSeq2000_QC.png "Example QC data from NextSeq")
+![QC images](https://github.com/jpreall/FTPS_2022/blob/main/Maize_Seq_QC.png "QC data from NextSeq2000")
 
 Don't let those ugly spikes in the "% Base" (right panel) at the end of R1 and going on through the beginning of R4 worry you.  This is very typical.  R2 and R3 are the two index reads, which contain the sample barcodes, which in the case of our experiment is just a pool of 2 sequences.  Thus, it's totally expected that they have non-uniform base percentages. The region at the beginning of "R4" (which is actually Read 2 of the genomic insert) that has a stretch of non-uniform base utilization is also quite normal to see in 10X Genomics libraries, and it comes from some common but tolerable artifacts of the library prep and sequencing.  If you look closely (or use a tool like [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)), you'll even be able to determine the sequence of an abundant "contaminating" signature at the start of Read2:
 
@@ -285,7 +285,9 @@ The first thing you should look at is the `web_summary.html`:
 Who am I kidding, the first thing you did was download and view the pretty Loupe file
 ![Loupe snapshot](https://github.com/jpreall/FTPS_2022/blob/main/images/maize_loupe.png "Your awesome Loupe file")
 
-That's ok, we all do it.  But seriously, go back to the [Web Summary](https://github.com/jpreall/SeqTech2019/blob/master/files/web_summary.html).  We're going to talk over what all those values mean in class. 
+That's ok, we all do it.  But seriously, let's look at the web summaries.  We're going to talk over what all those values mean in class. 
+[Web Summary: Control](https://github.com/jpreall/FTPS_2022/blob/main/files/web_summary_Control.html)
+[Web Summary: Treat](https://github.com/jpreall/FTPS_2022/blob/main/files/web_summary_Treat.html)
 
 *Instrumental Break*
 
@@ -326,19 +328,21 @@ Be careful not to accidentally bait a computation scientist into discussing the 
 First, tell cellranger which samples to aggregate by creating an aggr.csv file formatted thusly:
 
 ```bash
-library_id,molecule_h5
-LP_Lard,/path/to/LP_Lard/outs/molecule_info.h5
-LP_Control,/path/to/LP_Control/outs/molecule_info.h5
+sample_id,molecule_h5
+FTPS22_Ctrl,/fake/path/FTPS22/count/FTPS22_Ctrl/outs/molecule_info.h5
+FTPS22_Treat,/fake/path/FTPS22/count/FTPS22_Treat/outs/molecule_info.h5
 ```
 `cellranger aggregate` uses the `molecule_info.h5` file as the primary data source to do its downsampling.  This file contains rich data about each unique cDNA detected, including the number of duplicated or redundant reads mapping to a common UMI.  It is cleaner to downsample sequencing data based on this data rather than a simplified count matrix, which has discarded any information about the library complexity, PCR duplications, etc.  Cellranger uses this richer data source, but other tools seem to work with the final count matrix just fine.  Again, don't ask a bioinformation about it if you have children to feed some time today.
 
 #### Run cellranger aggr:
 
 ```bash
-cellranger aggr --id=SeqTech2018_LP_combined \
-	--localcores=12 \
-	--csv=/path/to/aggr.csv \
-	--normalize=mapped
+cellranger aggr --id=FTPS22 \
+	--jobmode=local \
+	--csv=$BASEDIR/aggr.csv \
+	--normalize=mapped \
+	--localcores=16 \
+	--localmem=64 
 ```
 `cellranger aggr` is significantly less memory and cpu intensive than `cellranger count`.  If you are aggregating only a few samples, this should take less than an hour.  
 
