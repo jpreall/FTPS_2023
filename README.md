@@ -267,7 +267,7 @@ $samtools view possorted_genome_bam.bam 1 | head -n 1
 VH00553:6:AAALMHYHV:1:1208:32471:20576	0	1	1	255	90M	*	0	0	GAATTCCAAAGCCAAAGATTGCATCAGTTCTGCTGCTATTTCCTCCTATCATTCTTTCTGATGTTGAAAATGATATTAAGCCTAGGATTC	CCCCCCCCCCCCCCCCC;CCCC;CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC;CCCCCCCCCCCCCCC	NH:i:1	HI:i:1	AS:i:88	nM:i:0	RG:Z:FTPS22_Ctrl:0:1:AAALMHYHV:1	RE:A:I	xf:i:0	CR:Z:TCATGAGTCGTGAGAG	CY:Z:CCCCCCCCCCCCCCCC	CB:Z:TCATGAGTCGTGAGAG-1	UR:Z:TGTTCTAGTGCC	UY:Z:CCCCCCCCCCCC	UB:Z:TGTTCTAGTGCC
 
 ```
-*Note: The pre-baked data that I linked above doesn't include the BAM file, since it's about 13GB in size.*
+*Note: The pre-baked data that I linked above doesn't include the BAM file, since it's about 31GB in size.*
 
 If you want to learn about what all these columns and tags mean, check out [this guide](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/output/bam)
 
