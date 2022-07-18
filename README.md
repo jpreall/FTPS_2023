@@ -19,7 +19,12 @@ This tutorial will be a guide through the first few steps of primary data analys
 **Root Meristem**
 
 In the lab, the groups prepared some 10X Genomics 3' Gene Expression libraries. We attempted to prepare 4 samples: 2 replicates each of treatment vs control.  Only one replicate of each passed QC during sample preparation, so we have a total of 2 sequenced datasets to analyze.
- 
+
+**cDNA Quality Control**
+After the cDNA amplification step, we always check libraries on a BioAnalyzer or Tapestation
+<img src="https://github.com/jpreall/FTPS_2022/blob/main/images/cDNA_traces.png" width="800">
+
+**Loading the Library**
 These were pooled and sequenced at the CSHL NGS Core on a NextSeq2000, P3 flow cell, 100 cycle kit. Using the read format:
 
 | Read1 | Index1 | Index2 | Read2 |
@@ -294,7 +299,9 @@ Who am I kidding, the first thing you did was download and view the pretty Loupe
 ![Loupe snapshot](https://github.com/jpreall/FTPS_2022/blob/main/images/maize_loupe.png "Your awesome Loupe file")
 
 That's ok, we all do it.  But seriously, let's look at the web summaries.  We're going to talk over what all those values mean in class. 
+
 [Web Summary: Control](https://github.com/jpreall/FTPS_2022/blob/main/files/web_summary_Control.html)
+
 [Web Summary: Treat](https://github.com/jpreall/FTPS_2022/blob/main/files/web_summary_Treat.html)
 
 *Instrumental Break*
@@ -306,12 +313,13 @@ Total saturation is listed on the summary page, with a more thorough view in the
 
 <img src="https://github.com/jpreall/FTPS_2022/blob/main/images/SeqTech_Saturation.png" width="500">
 
-Putting it all together, we can see these libraries are actually pretty lousy:
- * Median UMIs per cell: 1,218
- * Median genes per cell: 601
- * Sequencing saturation: 72.4%
- 
-This is kind of typical for 5' Gene Expression libraries on lymphocyte-rich samples.  T- and B-cells are transcriptionally quiescent, and always contain far fewer unique transcripts than other cell types.  
+To a first approximation, we can see Control are pretty decent, but the Treated sample is not so good:
+| Sample | Estimated Cells | Median UMIs/cell | Median genes/cell | Seq. saturation | Genome Mapping Rate |
+| Control | 4,399 | 13,795 | 3,643 | 55.0% | 64.5% |
+| Treat | 1,005 | 1,982 | 1,131 | 72.3% | 28.2% |
+
+For both samples, we attempted to load ~10,000 cells.  Based on 10X's reported recovery rate of ~60%, we would have expected a yield of about 6,000 cells after barcoding. The yield on the Control sample is tolerable, but the Treated sample is quite poor. Not only that, but we see an awful low mapping rate.  Likely, the majority of these non-mappers are coming from adapter-dimer artifacts that carried through the library prep because there simply wasn't enough cDNA coming from successfully captured cells to make a good library.
+
 
 #### The Data Matrix
 Two other files that will be of extreme value to you are the actual data matrices.  Cellranger packages what would otherwise be an enormous data file into a clean, compressed hierarchical data (HDF5) file format.  It creates two versions: one that has been filtered of "empty" cells based on its [filtering algorithm](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/algorithms/overview), and the raw matrix containing all 3M+ barcodes and their associated gene counts, regardless if they are likely to contain valid cells or not.
