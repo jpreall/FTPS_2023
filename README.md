@@ -1,7 +1,7 @@
 # FTPS_2022
 ## CSHL Plant Science Course, Single Cell Lectures, 2022
 
-### [Link to pre-baked data](https://www.dropbox.com/s/ysp7xfmwfjl0ztl/FTPS22_data.tar.gz?dl=1) (415MB .tar.gz file)
+### [Link to pre-baked data](https://www.dropbox.com/s/ysp7xfmwfjl0ztl/FTPS22_data.tar.gz?dl=1) (322MB .tar.gz file)
 
 -------
 
