@@ -24,6 +24,8 @@ In the lab, the groups prepared some 10X Genomics 3' Gene Expression libraries. 
 After the cDNA amplification step, we always check libraries on a BioAnalyzer or Tapestation
 <img src="https://github.com/jpreall/FTPS_2022/blob/main/images/cDNA_traces.png" width="800">
 
+Ideally, these traces should contain a broad peak ranging from 1,000-10,000 base pairs, representing the full assortment of expressed full-length genes in the sample. We can tell already that the Treated sample generated less overall cDNA than the Control, despite identical PCR conditions. This could suggest that we either captured fewer cells than intended, or that something about that sample didn't go as planned (for example, the silane cleanup beads were over-dried for that sample, leading to less efficient elution of the cDNA during cleanup. We will get a closer look when the data comes back.
+
 **Loading the Library**
 These were pooled and sequenced at the CSHL NGS Core on a NextSeq2000, P3 flow cell, 100 cycle kit. Using the read format:
 
@@ -33,7 +35,7 @@ These were pooled and sequenced at the CSHL NGS Core on a NextSeq2000, P3 flow c
 
 Here's what we roughly expect from the yield of this flow cell:
 
-**1.1B read pairs / (2 samples * 8000 cells each) = 68,750 reads per cell**
+**1.1B read pairs / (2 samples * 6000 cells each) = 91,667 reads per cell**
 
 Let's dive in:
 
