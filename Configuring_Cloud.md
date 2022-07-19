@@ -19,11 +19,17 @@ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo apt install ./google-chrome-stable_current_amd64.deb
 ```
 
+# Create a new Conda environment for Scanpy analysis
+```bash
+# Download my configuration file and create a new Conda environment with it.
+wget https://www.dropbox.com/s/c80cw6rykxw27w3/scanpy.yml
+conda env create -f scanpy.yml
+```
+
 # Grab my Jupyter notebooks from Github:
 ```bash
-mkdir FTPS22
-cd FTPS22
-git clone
+wget https://www.dropbox.com/s/ln136h0hqcbn082/FTPS22_data_exploration.ipynb
 
-conda create --name SingleCell python=3.7 --file environment.yml
+# Launch the notebook
+jupyter notebook FTPS22_data_exploration.ipynb
 ```
