@@ -46,7 +46,7 @@ Let's dive in:
 
 You submitted your 10X libraries to your sequencing core and the run completed successfully.  If your core is nice enough to provide an Illumina quality score plot as part of your data delivery, it might look something like this:
 
-![QC images](https://github.com/jpreall/FTPS_2022/blob/main/Maize_Seq_QC.png "QC data from NextSeq2000")
+![QC images](https://github.com/jpreall/FTPS_2022/blob/main/images/Maize_Seq_QC.png "QC data from NextSeq2000")
 
 Don't let those ugly spikes in the "% Base" (right panel) at the end of R1 and going on through the beginning of R4 worry you.  This is very typical.  R2 and R3 are the two index reads, which contain the sample barcodes, which in the case of our experiment is just a pool of 2 sequences.  Thus, it's totally expected that they have non-uniform base percentages. The region at the beginning of "R4" (which is actually Read 2 of the genomic insert) that has a stretch of non-uniform base utilization is also quite normal to see in 10X Genomics libraries, and it comes from some common but tolerable artifacts of the library prep and sequencing.  If you look closely (or use a tool like [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)), you'll even be able to determine the sequence of an abundant "contaminating" signature at the start of Read2:
 
