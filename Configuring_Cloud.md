@@ -2,6 +2,10 @@
 # Configuring your cloud instance for Scanpy 
 -------
 
+# This is all complete crap and you won't have to do any of this
+I figured out how to make pre-configured Jupyter servers for all of you.  You're welcome!
+
+
 # Install Python via Anaconda
 ```bash
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
