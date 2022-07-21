@@ -3,6 +3,7 @@
 
 ### [Link to pre-baked data](https://www.dropbox.com/s/izwly580v4r0nvc/FTPS22_data.tar.gz?dl=1) (637MB .tar.gz file)
 
+### [Lecture Slides](https://www.dropbox.com/s/vezs9ppkwpudg97/Preall_FTPS22.pptx?dl=0) (158MB .pptx file)
 -------
 
 This tutorial will be a guide through the first few steps of primary data analysis:
