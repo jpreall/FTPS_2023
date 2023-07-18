@@ -73,6 +73,16 @@ run_config.json
 
 ```
 
+![Report: Control-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-1_report.html) 
+![Report: Control-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-2_report.html) 
+![Report: Control-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-3_report.html) 
+![Report: Control-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-4_report.html) 
+
+![Report: FCP-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-1_report.html) 
+![Report: FCP-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-2_report.html) 
+![Report: FCP-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-3_report.html) 
+![Report: FCP-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-4_report.html) 
+
 -------
 ### What are all those files?
 
