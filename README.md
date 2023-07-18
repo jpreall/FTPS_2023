@@ -46,7 +46,8 @@ Let's dive in:
 
 You submitted your libraries to your sequencing core and the run completed successfully.  If your core is nice enough to provide an Illumina quality score plot as part of your data delivery, it might look something like this:
 
-![QC images](https://github.com/jpreall/FTPS_2023/blob/main/images/PIP_FASTQ_base.png "QC data from NextSeq2000")
+![QC images](https://github.com/jpreall/FTPS_2023/blob/main/images/PIP_FASTQ_qual.png "Quality scores from NextSeq2000")
+![QC images](https://github.com/jpreall/FTPS_2023/blob/main/images/PIP_FASTQ_base.png "Base composition from NextSeq2000")
 
 Don't let those ugly spikes in the "% Base" (right panel) at the end of R1 and going on through the beginning of R4 worry you.  This is very typical.  R2 and R3 are the two index reads, which contain the sample barcodes, which in the case of our experiment is just a pool of 8 sequences.  Thus, it's totally expected that they have non-uniform base percentages. The region at the beginning of "R4" (which is the genomic insert) that has a stretch of non-uniform base utilization is also quite normal to see in libraries using TSOs in the RT chemistry (eg. 10X and PIPseq), and it comes from some common but tolerable artifacts of the library prep and sequencing. 
 
