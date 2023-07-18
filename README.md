@@ -4,13 +4,6 @@
 ### [Link to pre-baked data](https://www.dropbox.com/s/izwly580v4r0nvc/FTPS22_data.tar.gz?dl=1) (637MB .tar.gz file)
 
 ### [Lecture Slides](https://www.dropbox.com/s/vezs9ppkwpudg97/Preall_FTPS22.pptx?dl=0) (158MB .pptx file)
--------
-
-This tutorial will be a guide through the first few steps of primary data analysis:
-1. [FASTQ generation with `cellranger mkfastq`](#section1)
-2. [Making a custom genome reference with `cellranger mkref`](#section2)
-3. [Mapping and count matrix generation with `cellranger count`](#section3)
-4. [Combining two samples into a shared, normalized matrix with `cellranger aggr`](#section4)
 
 -------
 ## Single Cell Lab: Demonstration Experiment
@@ -35,14 +28,12 @@ These were pooled and sequenced at the CSHL NGS Core on a NextSeq2000, P2 flow c
 
 Here's what we would naively expect from the yield of this flow cell: based on how the samples were loaded
 
-**500M read pairs / (8 samples * 6000 cells each) = 91,667 reads per cell**
+**500M read pairs / (8 samples * 2000 cells targeted/sample) = 31,250 reads per cell**
 
-Let's dive in:
 
 ### Illumina sequencing output
+**Congratulations!  Some of your experiments sort of worked, maybe.**
 *(This is taken care of for you this year.  But here is some useful information about this step anyway, in case it's ever your responsibility to do the FASTQ generation step.):*
-
-**Congratulations!  You didn't screw up an experiment.  Now you might have data.**
 
 You submitted your libraries to your sequencing core and the run completed successfully.  If your core is nice enough to provide an Illumina quality score plot as part of your data delivery, it might look something like this:
 
