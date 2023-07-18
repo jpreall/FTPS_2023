@@ -54,15 +54,15 @@ Don't let those ugly spikes in the "% Base" (right panel) at the end of R1 and g
 **Pipseeker** is Fluent Bio's free-to-use software that carries out mapping, and simple data analysis. *This is not meant to be run on your personal laptop.* For the purposes of this course, the Pipseeker steps will be carried out ahead of time before our interactive session, partly because it takes some time to complete (and that is if there is no queue on our cluster).  
 
 
-![Report: Control-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-1_report.html) 
-![Report: Control-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-2_report.html) 
-![Report: Control-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-3_report.html) 
-![Report: Control-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-4_report.html) 
+[Report: Control-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-1_report.html) 
+[Report: Control-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-2_report.html) 
+[Report: Control-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-3_report.html) 
+[Report: Control-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-4_report.html) 
 
-![Report: FCP-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-1_report.html) 
-![Report: FCP-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-2_report.html) 
-![Report: FCP-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-3_report.html) 
-![Report: FCP-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-4_report.html) 
+[Report: FCP-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-1_report.html) 
+[Report: FCP-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-2_report.html) 
+[Report: FCP-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-3_report.html) 
+[Report: FCP-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-4_report.html) 
 
 -------
 
@@ -83,87 +83,8 @@ run_config.json
 
 ```
 
-
 -------
 ### What are all those files?
 
 The first thing you should look at is the `report.html`:
 
-### START EDITING HERE
-![Web Summary](https://github.com/jpreall/FTPS_2022/blob/main/images/maize_websumm.png "Web Summary Preview")
-
-   
-Who am I kidding, the first thing you did was download and view the pretty Loupe file
-![Loupe snapshot](https://github.com/jpreall/FTPS_2022/blob/main/images/maize_loupe.png "Your awesome Loupe file")
-
-That's ok, we all do it.  But seriously, let's look at the web summaries.  We're going to talk over what all those values mean in class. 
-
-[Web Summary: Control](https://github.com/jpreall/FTPS_2022/blob/main/files/web_summary_Control.html)
-
-[Web Summary: Treat](https://github.com/jpreall/FTPS_2022/blob/main/files/web_summary_Treat.html)
-
-*Instrumental Break*
-
-#### Sequencing Saturation
-The single most useful piece of information stored in this summary is the estimate of sequencing saturation.  This will tell you how deeply you have sequenced these libraries, and whether it would be worth your time and money to add additional lanes of sequencing to identify new transcripts improve count numbers for differential expression.  
-
-Total saturation is listed on the summary page, with a more thorough view in the `analysis` tab:
-
-<img src="https://github.com/jpreall/FTPS_2022/blob/main/images/SeqTech_Saturation.png" width="500">
-
-To a first approximation, we can see Control are pretty decent, but the Treated sample is not so good:
-| Sample | Estimated Cells | Median UMIs/cell | Median genes/cell | Seq. saturation | Genome Mapping Rate |
-| Control | 4,399 | 13,795 | 3,643 | 55.0% | 64.5% |
-| Treat | 1,005 | 1,982 | 1,131 | 72.3% | 28.2% |
-
-For both samples, we attempted to load ~10,000 cells.  Based on 10X's reported recovery rate of ~60%, we would have expected a yield of about 6,000 cells after barcoding. The yield on the Control sample is tolerable, but the Treated sample is quite poor. Not only that, but we see an awful low mapping rate.  Likely, the majority of these non-mappers are coming from adapter-dimer artifacts that carried through the library prep because there simply wasn't enough cDNA coming from successfully captured cells to make a good library.
-
-
-#### The Data Matrix
-Two other files that will be of extreme value to you are the actual data matrices.  Cellranger packages what would otherwise be an enormous data file into a clean, compressed hierarchical data (HDF5) file format.  It creates two versions: one that has been filtered of "empty" cells based on its [filtering algorithm](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/algorithms/overview), and the raw matrix containing all 3M+ barcodes and their associated gene counts, regardless if they are likely to contain valid cells or not.
-
- * filtered_feature_bc_matrix.h5
- * raw_feature_bc_matrix.h5
-
-The filtered and raw matrices are both also stored under a separate matrix market exchange (.mtx) file format along with separate .csv files listing the cell barcodes and gene names, which can be stiched together into a unified data matrix.  Look for these folders under `filtered_feature_bc_matrix` and `raw_feature_bc_matrix`, respectively.  You can open any of these files with [Seurat](https://satijalab.org/seurat/), or [Scanpy](https://scanpy.readthedocs.io/en/latest/), or potentially other 3rd party analysis packages.   
-
-
-## <a name="section4"> Combining samples with `cellranger aggr`</a>
-
-Let's combine both the control and the lard diet samples into a unified data matrix.  
-Be careful not to accidentally bait a computation scientist into discussing the relative merits of the many different strategies for aggregating multiple data sets.  You will have to gnaw your foot off before they finally get to the punchline: 
-*there is no single best way to jointly analyze multiple datasets*
-
-10X Genomics has decided to sidestep the issue by providing a simple data aggregation pipeline that takes a conservative approach as a first step, and leaving the more sophisticated steps in your capable hands.  `cellranger aggr` combines two or more datasets by randomly downsampling (discarding) reads from the richer datasets, until all samples have approximately the same median number of reads per cell.  This helps mitigate one of the simplest and easy to fix batch-effects caused by sequencing depth, but will not correct for the zillions of other variables that injected unintended variation to your samples. 
-
-
-#### Create an aggr.csv file:
-
-First, tell cellranger which samples to aggregate by creating an aggr.csv file formatted thusly:
-
-```bash
-sample_id,molecule_h5
-FTPS22_Ctrl,/fake/path/FTPS22/count/FTPS22_Ctrl/outs/molecule_info.h5
-FTPS22_Treat,/fake/path/FTPS22/count/FTPS22_Treat/outs/molecule_info.h5
-```
-`cellranger aggregate` uses the `molecule_info.h5` file as the primary data source to do its downsampling.  This file contains rich data about each unique cDNA detected, including the number of duplicated or redundant reads mapping to a common UMI.  It is cleaner to downsample sequencing data based on this data rather than a simplified count matrix, which has discarded any information about the library complexity, PCR duplications, etc.  Cellranger uses this richer data source, but other tools seem to work with the final count matrix just fine.  Again, don't ask a bioinformation about it if you have children to feed some time today.
-
-#### Run cellranger aggr:
-
-```bash
-cellranger aggr --id=FTPS22 \
-	--jobmode=local \
-	--csv=$BASEDIR/aggr.csv \
-	--normalize=mapped \
-	--localcores=16 \
-	--localmem=64 
-```
-`cellranger aggr` is significantly less memory and cpu intensive than `cellranger count`.  If you are aggregating only a few samples, this should take less than an hour.  
-
-Once it's done, you can view the web summary to see what was done to normalize the libraries:
-
-<img src="https://github.com/jpreall/FTPS_2022/blob/main/images/maize_aggr_websumm.png" width="800">
-
-Let's take a look at that aggr Loupe file.  Each sample is now stored as a separate category under "LibraryID":
-
-<img src="https://github.com/jpreall/FTPS_2022/blob/main/images/maize_aggr.png" width="500">
