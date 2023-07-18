@@ -53,17 +53,6 @@ Don't let those ugly spikes in the "% Base" (right panel) at the end of R1 and g
 
 **Pipseeker** is Fluent Bio's free-to-use software that carries out mapping, and simple data analysis. *This is not meant to be run on your personal laptop.* For the purposes of this course, the Pipseeker steps will be carried out ahead of time before our interactive session, partly because it takes some time to complete (and that is if there is no queue on our cluster).  
 
-
-[Report: Control-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-1_report.html)  
-[Report: Control-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-2_report.html)  
-[Report: Control-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-3_report.html)  
-[Report: Control-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-4_report.html)  
-  
-[Report: FCP-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-1_report.html)  
-[Report: FCP-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-2_report.html)  
-[Report: FCP-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-3_report.html)  
-[Report: FCP-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-4_report.html)  
-
 -------
 
 These are the files produced by Pipseeker:
@@ -84,7 +73,15 @@ run_config.json
 ```
 
 -------
-### What are all those files?
+### QC summary reports for all 8 samples:
 
-The first thing you should look at is the `report.html`:
+[Report: Control-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-1_report.html)  
+[Report: Control-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-2_report.html)  
+[Report: Control-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-3_report.html)  
+[Report: Control-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/Control-4_report.html)  
+  
+[Report: FCP-1](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-1_report.html)  
+[Report: FCP-2](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-2_report.html)  
+[Report: FCP-3](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-3_report.html)  
+[Report: FCP-4](https://github.com/jpreall/FTPS_2023/blob/main/files/files/FCP-4_report.html)  
 
