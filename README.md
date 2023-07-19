@@ -1,9 +1,9 @@
 # FTPS_2023
 ## CSHL Plant Science Course, Single Cell Lectures, 2023
 
-### [Link to pre-baked data](https://www.dropbox.com/s/izwly580v4r0nvc/FTPS22_data.tar.gz?dl=1) (637MB .tar.gz file)
+### [Link to pre-baked data](https://www.dropbox.com/scl/fi/fybbd2xbwbycju90l96e2/FTPS23_data.tar.gz?rlkey=gu68wxv32k3pcripjo8nk23b1&dl=0) (~400MB .tar.gz file)
 
-### [Lecture Slides](https://www.dropbox.com/s/vezs9ppkwpudg97/Preall_FTPS22.pptx?dl=0) (158MB .pptx file)
+### [Lecture Slides](https://www.dropbox.com/scl/fi/p3f86aalhgnwsjtjtgjk9/Preall_FTPS23.pptx?rlkey=5skruntfaco7w0fco8rgbfigw&dl=0) (158MB .pptx file)
 
 -------
 ## Single Cell Lab: Demonstration Experiment
